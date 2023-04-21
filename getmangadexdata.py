@@ -48,11 +48,23 @@ def main():
         rating = detail_data["data"]["attributes"].get("rating", {}).get("bayesian", None)
         users_rated = detail_data["data"]["attributes"].get("users", {}).get("total", None)
         user_score = detail_data["data"]["attributes"].get("user_score", None)
+        r = requests.get(f"{dex_url}/statistics/manga/{manga_id}")
+
+        rating, follows, *others = r.json()["statistics"][manga_id].values()
+
+        print(
+    "Mean Rating:", rating["average"], "\n" + 
+    "Bayesian Rating:", rating["bayesian"], "\n" +
+    "Follows:", follows,
+    )
+        
 
         cur.execute("INSERT INTO MangaDex (manga_id, title, rating, users_rated, user_score) VALUES (?, ?, ?, ?, ?)", (manga_id, title, rating, users_rated, user_score))
 
     conn.commit()
     print("Added 25 entries to Anime.db. Please check the file and verify the results.")
+
+    
 
 if __name__ == '__main__':
     main()
